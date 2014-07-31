@@ -1,0 +1,7 @@
+eclipse.preferences.version=1
+encoding//recommend/__init__.py=utf-8
+encoding//recommend/dao/__init__.py=utf-8
+encoding//recommend/recommender.py=utf-8
+encoding//test/__init__.py=utf-8
+encoding//test/test_recommend.py=utf-8
+encoding/setup.py=utf-8
