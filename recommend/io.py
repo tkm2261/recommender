@@ -17,6 +17,7 @@ class RecommenderData(object):
             self.preference_matrix = preference_matrix
         else:
             self.preference_matrix = spMat.csr_matrix(preference_matrix)
+
         self.map_idx2user = map_idx2user
         self.map_idx2item = map_idx2item
         self.map_user2idx = map_user2idx
