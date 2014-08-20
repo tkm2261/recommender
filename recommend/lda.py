@@ -5,12 +5,13 @@ from recommender import Recommender
 import numpy
 import pandas
 import scipy.sparse as spMat
+from sklearn.neighbors import NearestNeighbors
 
 from gensim.matutils import Sparse2Corpus, corpus2dense
 from gensim.models.ldamodel import LdaModel
 class LDA(Recommender):
 
-    def fit(self, k=100, max_iter=15, method='lsnmf'):
+    def fit(self, k=100, max_iter=15):
         if self.recommender_data.preference_matrix.shape[1] < k:
             k = self.recommender_data.preference_matrix.shape[1]
 
@@ -25,6 +26,14 @@ class LDA(Recommender):
         self.item_matrix = model.worddist()
 
 
+    def get_score(self, k=100, batch=10000):
+
+        nbrs = NearestNeighbors(n_neighbors=k, metric='euclidean').fit(self.item_matrix)
+
+        scores = nbrs.kneighbors(self.user_matrix, return_distance=False)
+        scores = [[self.recommender_data.map_idx2item[i] for i in row] for row in scores]
+
+        return scores
 # Latent Dirichlet Allocation + Collapsed Variational Bayesian
 # This code is available under the MIT License.
 # (c)2010-2011 Nakatani Shuyo / Cybozu Labs Inc.

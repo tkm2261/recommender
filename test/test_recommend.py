@@ -16,7 +16,7 @@ PWD = os.getcwd()
 
 
 class TestRecommend(unittest.TestCase):
-    """
+
     def test_read_data(self):
         data = read_csv(PWD+"/data/test_data.csv").preference_matrix
 
@@ -131,7 +131,7 @@ class TestRecommend(unittest.TestCase):
 
         print model.get_score()
 
-    """
+
     def test_bpr(self):
 
         map_tmp_user = {i:i for i in xrange(5)}

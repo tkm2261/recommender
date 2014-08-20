@@ -2,6 +2,14 @@
 # -*- coding:utf-8
 import pandas
 import numpy
+from multiprocessing import Pool
+
+def map_help(args):
+    data, item_dic, ranking = args
+    idx = numpy.argsort(data)[-ranking:]
+    idx = [item_dic[i] for i in idx]
+    
+    return idx
 
 class Recommender(object):
 
@@ -34,14 +42,22 @@ class Recommender(object):
         score_matrix = numpy.dot(self.user_matrix[user_idx], self.item_matrix)
 
         score_matrix = pandas.DataFrame(score_matrix.T)
-
+        """
         scores = []
+        
         for user in score_matrix:
-            idx = score_matrix[user].rank(ascending=False)[:ranking]#.index.values
-            idx = score_matrix.sort(user, ascending=False).index.values
-            idx = [self.recommender_data.map_idx2user[i] for i in idx]
+            #idx = score_matrix[user].rank(ascending=False)[:ranking]#.index.values
+            #idx = score_matrix.sort(user, ascending=False).index.values
+            idx = numpy.argsort(score_matrix[user])[-ranking:]
+            idx = [self.recommender_data.map_idx2item[i] for i in idx]
             scores.append(list(idx))
-
+        """
+        p = Pool()
+        scores = p.map(map_help, [[score_matrix[user], 
+                                   self.recommender_data.map_idx2item,
+                                   ranking] for user in score_matrix])
+        p.close()
+        p.join()
         return scores
 
     def get_score(self, k=100, batch=10000):
@@ -52,14 +68,14 @@ class Recommender(object):
 
         scores = []
         for i in xrange(batch_num):
-
+            print "batch:", i, batch_num
             start = i * batch
             end = (i + 1) * batch
 
             if end > self.user_matrix.shape[0]:
                 end = self.user_matrix.shape[0]
 
-            scores += self.predict(xrange(start,end), index=True)
+            scores += self.predict(xrange(start,end),ranking=k, index=True)
 
         self.all_scores = scores
 
